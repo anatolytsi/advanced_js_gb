@@ -69,6 +69,10 @@ class Goods {
         container.innerHTML = html;
     }
 
+    sum() {
+        return this.goods.reduce((a, b) => a + (b.price || 0), 0);
+    }
+
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
