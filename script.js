@@ -75,6 +75,43 @@ class Goods {
 
 }
 
+class BasketItem extends Product{
+    constructor(basketId, product, quantity) {
+        this.basketId = basketId;
+        this.product = product;
+        this.quantity = quantity;
+    }
+
+    sum() {
+        return this.product.price * this.product.quantity;
+    }
+}
+
+class Basket {
+    constructor(userId, basketId) {
+        this.userId = userId;
+        this.id = basketId;
+        this.quantity = 0;
+        this.items = [];
+    }
+
+    addItem(product, quantity=1) {
+        this.items.push(new BasketItem(this.basketId, product, quantity));
+    }
+
+    changeAmount() {
+
+    }
+
+    removeItem() {
+
+    }
+
+    sum() {
+        
+    }
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
     let isBasketOpen = false;
     // const r = await fetch(`${baseUrl}${getListUrl}`);
