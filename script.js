@@ -4,30 +4,52 @@ const getBasketUrl = '/getBasket.json';
 const addToBasketUrl = '/addToBasket';
 const removeFromBasketUrl = '/deleteFromBasket.json';
 
+const makeGETRequest = (url, callback) => {
+    return new Promise(async(resolve) => {
+        let xhr;
+
+        if (window.XMLHttpRequest) {
+            xhr = new XMLHttpRequest();
+        } else if (window.ActiveXObject) {
+            xhr = new ActiveXObject("Microsoft.XMLHTTP");
+        }
+
+        xhr.onreadystatechange = function () {
+            switch (xhr.readyState) {
+                case 0:
+                    console.log('Initialization');
+                    break;
+                case 1:
+                    console.log('Loading');
+                    break;
+                case 2:
+                    console.log('Server loaded');
+                    break;
+                case 3:
+                    console.log('Exchange');
+                    break;
+                case 4:
+                    callback(xhr.responseText);
+                    resolve();
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        xhr.open('GET', url, true);
+        xhr.send();
+    })
+}
+
 let goods = [
     { title: 'Shirt', price: 150 },
     { title: 'Socks', price: 50 },
     { title: 'Jacket', price: 350 },
     { title: 'Shoes', price: 250 },
 ];
-// fetch(`${baseUrl}${getListUrl}`).then((d, e) => {
-//     console.log('d, ', d.json(), 'e', e);
-//     return {
-//         a: d.json(),
-//         b: d.text()
-//     };
-// }).then((d) => {
-//     console.log('data: ', d);
-// })
 
 const basketName = 'Добавить';
-// const renderList = (items) => {
-//     return items.map(item => {
-//         const isAdded = true;
-//         const basketName = isAdded ? 'Добавить' : 'Удалить';
-//         const basketUrl = isAdded ? `${baseUrl}${addToBasketUrl}` : `${baseUrl}${removeFromBasketUrl}`
-//     }).join('')
-// };
 
 const insertCode = (container, html) => {
     container.innerHTML = html;
@@ -40,7 +62,11 @@ class Product {
     }
 
     addToBasket() {
-
+        return new Promise(async(resolve) => {
+            makeGETRequest(`${baseUrl}${addToBasketUrl}`, (data) => {
+                resolve(JSON.parse(data));
+            });
+        });
     }
 
     render() {
@@ -58,6 +84,22 @@ class Product {
 class Goods {
     constructor(goods) {
         this.goods = goods;
+    }
+
+    static fetchData() {
+        return new Promise(async(resolve) => {
+            makeGETRequest(`${baseUrl}${getListUrl}`, (data) => {
+                resolve(JSON.parse(data));
+            });
+        });        
+    }
+
+    static transformData(list) {
+        return list.map(item => ({
+            title: item.product_name,
+            price: item.price,
+            id: item.id_product
+        }));
     }
 
     render(container) {
@@ -82,6 +124,14 @@ class BasketItem extends Product{
         this.quantity = quantity;
     }
 
+    removeFromBasket() {
+        return new Promise(async(resolve) => {
+            makeGETRequest(`${baseUrl}${removeFromBasketUrl}`, (data) => {
+                resolve(JSON.parse(data));
+            });
+        });  
+    }
+
     sum() {
         return this.product.price * this.product.quantity;
     }
@@ -99,6 +149,14 @@ class Basket {
         this.items.push(new BasketItem(this.basketId, product, quantity));
     }
 
+    getBasket() {
+        return new Promise(async(resolve) => {
+            makeGETRequest(`${baseUrl}${getBasketUrl}`, (data) => {
+                resolve(JSON.parse(data));
+            });
+        });        
+    }
+
     changeAmount() {
 
     }
@@ -114,17 +172,15 @@ class Basket {
 
 document.addEventListener('DOMContentLoaded', async () => {
     let isBasketOpen = false;
-    // const r = await fetch(`${baseUrl}${getListUrl}`);
-    // goods = await r.json();
-
-    const items = goods.map((product) => new Product(product.title, product.price));
-    const goodsList = new Goods(items);
-
-    console.log(goods);
     const listElement = document.querySelector('.goods-list');
 
-    // insertCode(listElement, renderList(goods));
-    goodsList.render(listElement);
+    await Goods.fetchData().then(data => {
+        goods = Goods.transformData(data);
+        const items = goods.map((product) => new Product(product.title, product.price));
+        const goodsList = new Goods(items);
+        goodsList.render(listElement);
+    });
+    
 
     const cartBtn = document.querySelector('.cart-button');
     const cart = document.querySelector('.basket');
