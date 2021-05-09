@@ -84,6 +84,11 @@ class Product {
 class Goods {
     constructor(goods) {
         this.goods = goods;
+        this.filteredGoods = goods;
+    }
+
+    filterGoods(value) {
+        this.filteredGoods = this.goods.filter((product) => (new RegExp(value, 'i')).test(product.title));
     }
 
     static fetchData() {
@@ -104,8 +109,8 @@ class Goods {
 
     render(container) {
         let html = '';
-        for (let i in this.goods) {
-            const goodsItem = this.goods[i];
+        for (let i in this.filteredGoods) {
+            const goodsItem = this.filteredGoods[i];
             html += goodsItem.render();
         }
         container.innerHTML = html;
@@ -174,13 +179,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     let isBasketOpen = false;
     const listElement = document.querySelector('.goods-list');
 
-    await Goods.fetchData().then(data => {
-        goods = Goods.transformData(data);
-        const items = goods.map((product) => new Product(product.title, product.price));
-        const goodsList = new Goods(items);
-        goodsList.render(listElement);
-    });
+    goods = Goods.transformData(await Goods.fetchData());
+    const items = goods.map((product) => new Product(product.title, product.price));
+    const goodsList = new Goods(items);
+    goodsList.render(listElement);
     
+    const headerInput = document.querySelector('.header-input');
+
+    headerInput.addEventListener('change', (e) => {
+        console.log(`New value ${e.target.value}`);
+        goodsList.filterGoods(e.target.value);
+        goodsList.render(listElement);
+        console.log(goodsList.filteredGoods);
+    })
 
     const cartBtn = document.querySelector('.cart-button');
     const cart = document.querySelector('.basket');
