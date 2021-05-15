@@ -11,22 +11,12 @@
 <body>
     <div id="app">
         <header>
-            <input class="header-input" type="text" placeholder="Найти товар..." v-on:input="query = $event.target.value">
+            <goods-search @query_event="update_query"></goods-search>
             <button class="cart-button" v-on:click="isVisibleCart = !isVisibleCart">Корзина</button>
         </header>
-        <div class="basket" :style="isVisibleCart ? { 'display': 'block' } : { 'display': 'none' }">
-            <div class="basket-list"></div>
-        </div>
+        <basket :is_visible="isVisibleCart"></basket>
         <main>
-            <div class="goods-list" vue-if="goods">
-                <div v-for="item in filterGoods" class="goods-list__item">
-                    <img src="#" alt="image">
-                    <span class="heading"> {{ item.title }} </span>
-                    <span class="price"> {{ item.price }} </span>
-                    <a class="button" href="#"> {{ basketName }} </a>
-                </div>
-            </div>
-            <div class="goods-list" vue-else>Нет данных :(</div>
+            <goods-list :query="query"></goods-list>
         </main>
     </div>
 </body>

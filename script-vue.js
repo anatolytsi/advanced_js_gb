@@ -43,13 +43,60 @@ const makeGETRequest = (url, callback) => {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-    const app = new Vue({
-        el: '#app',
-        data: {
-            goods: [],
-            query: '',
-            basketName: 'Добавить в корзину',
-            isVisibleCart: false
+    Vue.component('goods-search', {
+        template: `<input class="header-input" type="text" placeholder="Найти товар..." v-on:input="$emit('query_event', $event.target.value)">`,
+    })
+
+    Vue.component('basket', {
+        template: `
+            <div class="basket" :style="is_visible ? { 'display': 'block' } : { 'display': 'none' }">
+                <div class="basket-list">
+                    <p style="display: block; margin: auto" v-if="!basketItems.length">Корзина пуста</p>
+                    <div v-for="item in basketItems" class="basket-list__item">
+                        <img src="#" alt="image">
+                        <span class="heading"> {{ item.title }} </span>
+                        <span class="price"> {{ item.price }} </span>
+                    </div>
+                </div>
+            </div>
+        `,
+        props: {
+            is_visible: {
+                type: Boolean,
+                default: false
+            },
+            basketItems: {
+                type: Array,
+                default: () => []
+            }
+        }
+    });
+
+    Vue.component('goods-list', {
+        template: `
+        <div>
+            <div class="goods-list" v-if="goods">
+                <p style="display: block; margin: auto" v-if="!goods.length">Нет данных :(</p>
+                <div v-for="item in filterGoods" class="goods-list__item">
+                    <img src="#" alt="image">
+                    <span class="heading"> {{ item.title }} </span>
+                    <span class="price"> {{ item.price }} </span>
+                    <a class="button" href="#"> {{ basketName }} </a>
+                </div>
+            </div>
+        </div>
+        `,
+        props: {
+            query: {
+                type: String,
+                default: ''
+            }
+        },
+        data() {
+            return {
+                goods: [],
+                basketName: 'Добавить в корзину'
+            }
         },
         methods: {
             fetchData() {
@@ -74,5 +121,17 @@ document.addEventListener('DOMContentLoaded', async () => {
             this.fetchData();
         }
     });
-    console.log(app);
+
+    const app = new Vue({
+        el: '#app',
+        data: {
+            query: '',
+            isVisibleCart: false
+        },
+        methods: {
+            update_query: function (data) {
+                this.query = data;
+            }
+        }
+    });
 });
