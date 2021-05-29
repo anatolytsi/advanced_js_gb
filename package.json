@@ -1,0 +1,23 @@
+{
+  "scripts": {
+    "start": "node server.js"
+  },
+  "type": "module",
+  "name": "advanced_js_gb",
+  "description": "This is a repository for GeekBrains Advanced JavaScript course",
+  "version": "1.0.0",
+  "main": "server.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anatolytsi/advanced_js_gb.git"
+  },
+  "author": "anatolytsi",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/anatolytsi/advanced_js_gb/issues"
+  },
+  "homepage": "https://github.com/anatolytsi/advanced_js_gb#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
