@@ -6,9 +6,18 @@ body {
 
 header {
     position: fixed;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
     height: 50px;
     width: 100%;
+    padding: 0 20px;
     border: 1px solid gray;
+}
+
+.header-input {
+    margin-left: auto;
+    margin-right: 20px;
 }
 
 .cart-button {
